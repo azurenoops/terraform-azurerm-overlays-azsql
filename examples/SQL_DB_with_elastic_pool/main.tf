@@ -35,7 +35,7 @@ module "sql_single" {
   # Create a database users.
   create_databases_users = true
 
-  elastic_pool_enabled = false
+  enable_elastic_pool = false
 
   # Create a database.
   databases = [

@@ -30,7 +30,7 @@ resource "azurerm_private_endpoint" "pep" {
   private_service_connection {
     name                           = "sqldbprivatelink-primary"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_mssql_server.sql.id
+    private_connection_resource_id = azurerm_mssql_server.primary_sql.id
     subresource_names              = ["sqlServer"]
   }
 }
@@ -64,7 +64,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 
 resource "azurerm_private_dns_a_record" "a_rec" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_mssql_server.sql.name
+  name                = azurerm_mssql_server.primary_sql.name
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300

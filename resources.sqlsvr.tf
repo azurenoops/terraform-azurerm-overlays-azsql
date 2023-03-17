@@ -57,7 +57,7 @@ resource "azurerm_mssql_server" "secondary_sql" {
   administrator_login_password = var.administrator_password == null ? random_password.main.result : var.administrator_password
 
   dynamic "identity" {
-    for_each = var.identity == true ? [1] : [0]
+    for_each = var.enable_identity == true ? [1] : [0]
     content {
       type = "SystemAssigned"
     }
@@ -80,7 +80,7 @@ resource "azurerm_mssql_elasticpool" "elastic_pool" {
 
   license_type = var.elastic_pool_license_type
 
-  server_name = azurerm_mssql_server.sql.name
+  server_name = azurerm_mssql_server.primary_sql.name
 
   per_database_settings {
     max_capacity = coalesce(var.elastic_pool_databases_max_capacity, var.elastic_pool_sku.capacity)

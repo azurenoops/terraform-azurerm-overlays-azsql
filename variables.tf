@@ -34,6 +34,11 @@ variable "deploy_environment" {
   default     = "dev"
 }
 
+variable "random_password_length" {
+  description = "The desired length of random password created by this module"
+  default     = 32
+}
+
 #######################
 # RG Configuration   ##
 #######################
@@ -106,10 +111,9 @@ variable "server_version" {
   default     = "12.0"
 }
 
-variable "allowed_cidr_list" {
-  description = "Allowed IP addresses to access the server in CIDR format. Default to all Azure services"
-  type        = list(string)
-  default     = ["0.0.0.0/32"]
+variable "enable_failover_group" {
+  description = "Create a failover group of databases on a collection of Azure SQL servers"
+  default     = false
 }
 
 variable "enable_identity" {
@@ -125,10 +129,11 @@ variable "administrator_login" {
 variable "administrator_password" {
   description = "Administrator password for SQL Server"
   type        = string
+  default     = null
 }
 
 variable "single_databases_sku_name" {
-  description = "Specifies the name of the SKU used by the database. For example, `GP_S_Gen5_2`, `HS_Gen4_1`, `BC_Gen5_2`. Use only if `elastic_pool_enabled` variable is set to `false`. More documentation [here](https://docs.microsoft.com/en-us/azure/azure-sql/database/service-tiers-general-purpose-business-critical)"
+  description = "Specifies the name of the SKU used by the database. For example, `GP_S_Gen5_2`, `HS_Gen4_1`, `BC_Gen5_2`. Use only if `enable_elastic_pool` variable is set to `false`. More documentation [here](https://docs.microsoft.com/en-us/azure/azure-sql/database/service-tiers-general-purpose-business-critical)"
   type        = string
   default     = "BC_Gen5_2"
 }
@@ -155,7 +160,7 @@ variable "databases" {
     recover_database_id         = optional(string)
     restore_dropped_database_id = optional(string)
     storage_account_type        = optional(string, "Geo")
-    database_add_tags         = optional(map(string), {})
+    database_add_tags           = optional(map(string), {})
   }))
   default = []
 }
@@ -211,6 +216,11 @@ variable "backup_retention" {
     week_of_year      = optional(number)
   })
   default = {}
+}
+
+variable "ad_admin_login_name" {
+  description = "The login name of the principal to set as the server administrator"
+  default     = null
 }
 
 #####################################
@@ -271,10 +281,31 @@ variable "elastic_pool_databases_max_capacity" {
 # Sql Network Configuration   ##
 ################################
 
+variable "enable_firewall_rules" {
+  description = "Manage an Azure SQL Firewall Rule"
+  default     = false
+}
+
+variable "firewall_rules" {
+  description = "Range of IP addresses to allow firewall connections."
+  type = list(object({
+    name             = string
+    start_ip_address = string
+    end_ip_address   = string
+  }))
+  default = []
+}
+
 variable "allowed_subnets_ids" {
   description = "List of Subnet ID to allow to connect to the SQL Instance"
   type        = list(string)
   default     = []
+}
+
+variable "allowed_cidr_list" {
+  description = "Allowed IP addresses to access the server in CIDR format. Default to all Azure services"
+  type        = list(string)
+  default     = ["0.0.0.0/32"]
 }
 
 variable "public_network_access_enabled" {
@@ -289,17 +320,6 @@ variable "outbound_network_restriction_enabled" {
   default     = false
 }
 
-variable "azuread_administrator" {
-  description = "Azure AD Administrator configuration block of this SQL Server."
-  type = object({
-    login_username              = optional(string)
-    object_id                   = optional(string)
-    tenant_id                   = optional(string)
-    azuread_authentication_only = optional(bool)
-  })
-  default = null
-}
-
 variable "connection_policy" {
   description = "The connection policy the server will use. Possible values are `Default`, `Proxy`, and `Redirect`"
   type        = string
@@ -309,6 +329,22 @@ variable "connection_policy" {
 ##############################
 # Sql Audit Configuration   ##
 ##############################
+
+variable "enable_log_monitoring" {
+  description = "Enable audit events to Azure Monitor?"
+  default     = false
+}
+
+variable "log_analytics_workspace_id" {
+  description = "Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent"
+  default     = null
+}
+
+variable "disabled_alerts" {
+  description = "Specifies an array of alerts that are disabled. Allowed values are: Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
+  type        = list(any)
+  default     = []
+}
 
 variable "alerting_email_addresses" {
   description = "List of email addresses to send reports for threat detection and vulnerability assesment"
@@ -369,7 +405,12 @@ variable "email_addresses_for_alerts" {
   type        = list(string)
   default     = []
 }
-  
+
+variable "enable_database_extended_auditing_policy" {
+  description = "Manages Extended Audit policy for SQL database"
+  default     = false
+}
+
 variable "databases_extended_auditing_retention_days" {
   description = "Databases extended auditing logs retention"
   type        = number

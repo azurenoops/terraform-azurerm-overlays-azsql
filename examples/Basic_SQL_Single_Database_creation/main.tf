@@ -1,4 +1,14 @@
 
+#---------------------------------------------------------
+# Azure Region Lookup
+#----------------------------------------------------------
+module "mod_azure_region_lookup" {
+  source  = "azurenoops/overlays-azregions-lookup/azurerm"
+  version = "~> 1.0.0"
+
+  azure_region = "eastus"
+}
+
 module "mssql_single" {
   source = "../.."
   # source  = "azurenoops/overlays-azsql/azurerm"
@@ -15,6 +25,13 @@ module "mssql_single" {
   deploy_environment        = "dev"
   org_name                  = "anoa"
   workload_name             = "dev-sql"
+
+  # The admin of the SQL Server. If you do not provide a password,
+  # the module will generate a password for you.
+  # The password must be at least 8 characters long and contain
+  # characters from three of the following categories: English uppercase letters,
+  # English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.).
+  administrator_login    = "adminsqltest"
 
   # SQL server extended auditing policy defaults to `true`. 
   # To turn off set enable_sql_server_extended_auditing_policy to `false`  

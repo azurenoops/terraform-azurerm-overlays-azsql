@@ -12,7 +12,6 @@ data "azurenoopsutils_resource_name" "primary_sql" {
 }
 
 data "azurenoopsutils_resource_name" "secondary_sql" {
-  count         = var.enable_failover_group ? 1 : 0
   name          = var.workload_name
   resource_type = "azurerm_mssql_server"
   prefixes      = [var.org_name, module.mod_azure_region_lookup.location_short]

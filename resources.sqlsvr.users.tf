@@ -14,7 +14,7 @@ module "databases_users" {
   administrator_login    = var.administrator_login
   administrator_password = var.administrator_password
 
-  sql_server_hostname = azurerm_mssql_server.sql.fully_qualified_domain_name
+  sql_server_hostname = azurerm_mssql_server.primary_sql.fully_qualified_domain_name
 
   database_name = each.value.database
   user_name     = each.key
@@ -34,9 +34,9 @@ module "custom_users" {
   administrator_login    = var.administrator_login
   administrator_password = var.administrator_password
 
-  sql_server_hostname = azurerm_mssql_server.sql.fully_qualified_domain_name
+  sql_server_hostname = azurerm_mssql_server.primary_sql.fully_qualified_domain_name
 
-  database_name = var.elastic_pool_enabled ? azurerm_mssql_database.elastic_pool_database[each.value.database].name : azurerm_mssql_database.single_database[each.value.database].name
+  database_name = var.enable_elastic_pool ? azurerm_mssql_database.elastic_pool_database[each.value.database].name : azurerm_mssql_database.single_database[each.value.database].name
   user_name     = each.value.name
   user_roles    = each.value.roles
 }
@@ -47,7 +47,7 @@ module "custom_users" {
 
 resource "azurerm_sql_active_directory_administrator" "ad_user1" {
   count               = var.ad_admin_login_name != null ? 1 : 0
-  server_name         = azurerm_sql_server.primary.name
+  server_name         = azurerm_mssql_server.primary_sql.name
   resource_group_name = local.resource_group_name
   login               = var.ad_admin_login_name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -56,7 +56,7 @@ resource "azurerm_sql_active_directory_administrator" "ad_user1" {
 
 resource "azurerm_sql_active_directory_administrator" "ad_user2" {
   count               = var.enable_failover_group && var.ad_admin_login_name != null ? 1 : 0
-  server_name         = azurerm_sql_server.secondary.0.name
+  server_name         = azurerm_mssql_server.secondary_sql.0.name
   resource_group_name = local.resource_group_name
   login               = var.ad_admin_login_name
   tenant_id           = data.azurerm_client_config.current.tenant_id
