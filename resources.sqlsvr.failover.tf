@@ -9,7 +9,7 @@ resource "azurerm_sql_failover_group" "fog" {
   resource_group_name = local.resource_group_name
   server_name         = azurerm_mssql_server.primary_sql.name
   databases           = [azurerm_mssql_database.single_database.*.id]
-  tags                = merge({ "Name" = format("%s", "sqldb-failover-group") }, var.tags, )
+  tags                = merge({ "Name" = format("%s", "sqldb-failover-group") }, local.default_tags, var.add_tags, )
 
   partner_servers {
     id = azurerm_mssql_server.secondary_sql.0.id

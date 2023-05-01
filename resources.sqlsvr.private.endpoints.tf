@@ -49,7 +49,7 @@ resource "azurerm_private_dns_zone" "dns_zone" {
   count               = var.existing_private_dns_zone == null && var.enable_private_endpoint ? 1 : 0
   name                = var.environment == "public" ? "privatelink.database.windows.net" : "privatelink.database.usgovcloudapi.net"
   resource_group_name = local.resource_group_name
-  tags                = merge({ "Name" = format("%s", "Azure-Sql-Private-DNS-Zone") }, var.add_tags, )
+  tags                = merge({ "Name" = format("%s", "Azure-Sql-Private-DNS-Zone") }, local.default_tags, var.add_tags, )
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
@@ -59,7 +59,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet.0.id : var.existing_vnet_id
   registration_enabled  = true
-  tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, var.add_tags, )
+  tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, local.default_tags, var.add_tags, )
 }
 
 resource "azurerm_private_dns_a_record" "a_rec" {
