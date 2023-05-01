@@ -66,7 +66,7 @@ variable "existing_resource_group_name" {
 #####################################
 
 variable "enable_private_endpoint" {
-  description = "Manages a Private Endpoint to Azure Container Registry. Default is false."
+  description = "Manages a Private Endpoint to Azure SQL. Default is false."
   default     = false
 }
 
