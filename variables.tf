@@ -334,6 +334,12 @@ variable "log_analytics_workspace_id" {
   default     = null
 }
 
+variable "log_retention_days" {
+  description = "Specifies the number of days to keep in the audit logs. Default to 90 days."
+  type        = number
+  default     = 30
+}
+
 variable "disabled_alerts" {
   description = "Specifies an array of alerts that are disabled. Allowed values are: Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
   type        = list(any)
@@ -370,7 +376,7 @@ variable "databases_extended_auditing_enabled" {
   default     = false
 }
 
-variable "sql_server_extended_auditing_enabled" {
+variable "enable_sql_server_extended_auditing" {
   description = "True to enable extended auditing for SQL Server"
   type        = bool
   default     = false

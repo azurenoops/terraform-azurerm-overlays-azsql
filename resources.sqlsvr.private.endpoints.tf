@@ -42,7 +42,7 @@ data "azurerm_private_endpoint_connection" "pip" {
   count               = var.enable_private_endpoint ? 1 : 0
   name                = azurerm_private_endpoint.pep.0.name
   resource_group_name = local.resource_group_name
-  depends_on          = [azurerm_mssql_server.sql]
+  depends_on          = [azurerm_mssql_server.primary_sql]
 }
 
 resource "azurerm_private_dns_zone" "dns_zone" {
