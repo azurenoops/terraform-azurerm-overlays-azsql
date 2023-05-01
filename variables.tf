@@ -49,12 +49,6 @@ variable "create_sql_resource_group" {
   default     = false
 }
 
-variable "custom_resource_group_name" {
-  description = "The name of the custom resource group to create. If not set, the name will be generated using the `org_name`, `workload_name`, `deploy_environment` and `environment` variables."
-  type        = string
-  default     = null
-}
-
 variable "use_location_short_name" {
   description = "Use short location name for resources naming (ie eastus -> eus). Default is true. If set to false, the full cli location name will be used. if custom naming is set, this variable will be ignored."
   type        = bool

@@ -21,6 +21,12 @@ variable "use_naming" {
 }
 
 # Custom naming override
+variable "custom_resource_group_name" {
+  description = "The name of the custom resource group to create. If not set, the name will be generated using the `org_name`, `workload_name`, `deploy_environment` and `environment` variables."
+  type        = string
+  default     = null
+}
+
 variable "server_custom_name" {
   description = "Name of the SQL Server, generated if not set."
   type        = string

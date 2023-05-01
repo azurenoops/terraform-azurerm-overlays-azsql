@@ -89,7 +89,7 @@ module "sql_single" {
   ]
 
   # Creating Private Endpoint requires, VNet name and address prefix to create a subnet
-  # By default this will create a `privatelink.azurecr.io` DNS zone. 
+  # By default this will create a `privatelink.database.windows.net` DNS zone. 
   # To use existing private DNS zone specify `existing_private_dns_zone` with valid zone name
   enable_private_endpoint        = true
   virtual_network_name           = azurerm_virtual_network.vnet.name  
