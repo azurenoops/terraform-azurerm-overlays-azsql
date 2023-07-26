@@ -5,7 +5,7 @@
 # Private Link for Sql - Default is "false" 
 #---------------------------------------------------------
 data "azurerm_virtual_network" "vnet" {
-  count               = var.enable_private_endpoint && var.existing_vnet_id == null ? 1 : 0
+  count               = var.enable_private_endpoint && var.virtual_network_name != null ? 1 : 0
   name                = var.virtual_network_name
   resource_group_name = local.resource_group_name
 }
