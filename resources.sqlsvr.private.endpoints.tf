@@ -12,11 +12,11 @@ data "azurerm_virtual_network" "vnet" {
 
 resource "azurerm_private_endpoint" "pep" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = format("%s-private-endpoint", var.workload_name)
+  name                = format("%s-private-endpoint", local.primary_server_name)
   location            = var.location
   resource_group_name = local.resource_group_name
   subnet_id           = var.existing_subnet_id
-  tags                = merge({ "Name" = format("%s-private-endpoint", var.workload_name) }, var.add_tags, )
+  tags                = merge({ "Name" = format("%s-private-endpoint", local.primary_server_name) }, var.add_tags, )
 
   private_service_connection {
     name                           = "sqldbprivatelink-primary"
@@ -48,7 +48,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "vnet-private-zone-link"
   resource_group_name   = local.resource_group_name
   private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
-  virtual_network_id    = var.existing_vnet_id
+  virtual_network_id    = data.azurerm_virtual_network.vnet.0.id
   registration_enabled  = false
   tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, local.default_tags, var.add_tags, )
 }
