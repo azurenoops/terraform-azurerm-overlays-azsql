@@ -13,7 +13,7 @@ data "azurerm_virtual_network" "vnet" {
 data "azurerm_subnet" "snet" {
   count                = var.enable_private_endpoint && var.existing_private_subnet_name != null ? 1 : 0
   name                 = var.existing_private_subnet_name
-  virtual_network_name = azurerm_virtual_network.vnet.0.name
+  virtual_network_name = data.azurerm_virtual_network.vnet.0.name
   resource_group_name  = local.resource_group_name
 }
 
@@ -22,7 +22,7 @@ resource "azurerm_private_endpoint" "pep" {
   name                = format("%s-private-endpoint", local.primary_server_name)
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = azurerm_subnet.snet.0.id
+  subnet_id           = data.azurerm_subnet.snet.0.id
   tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.add_tags, )
 
   private_service_connection {
@@ -38,7 +38,7 @@ resource "azurerm_private_endpoint" "pep2" {
   name                = format("%s-secondary", "sqldb-private-endpoint")
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = azurerm_subnet.snet.0.id
+  subnet_id           = data.azurerm_subnet.snet.0.id
   tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.tags, )
 
   private_service_connection {
