@@ -46,17 +46,17 @@ resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
-  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : false
+  log_monitoring_enabled                  = var.enable_log_monitoring && var.log_analytics_workspace_id != null ? true : false
 }
 
 resource "azurerm_mssql_server_extended_auditing_policy" "secondary" {
-  count                                   = var.enable_sql_server_extended_auditing ? 1 : 0
+  count                                   = var.enable_sql_server_extended_auditing && var.enable_failover_group ? 1 : 0
   server_id                               = azurerm_mssql_server.secondary_sql.0.id
   storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
-  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : false
+  log_monitoring_enabled                  = var.enable_log_monitoring && var.log_analytics_workspace_id != null ? true : false
 }
 
 #-----------------------------------------------------------------------------------------------
