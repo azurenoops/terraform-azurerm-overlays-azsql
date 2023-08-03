@@ -39,12 +39,12 @@ resource "azurerm_private_endpoint" "pep2" {
   location            = local.location
   resource_group_name = local.resource_group_name
   subnet_id           = data.azurerm_subnet.snet.0.id
-  tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.tags, )
+  tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.add_tags, )
 
   private_service_connection {
     name                           = "sqldbprivatelink-secondary"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_sql_server.secondary_sql.0.id
+    private_connection_resource_id = azurerm_mssql_server.secondary_sql.0.id
     subresource_names              = ["sqlServer"]
   }
 }
@@ -63,7 +63,7 @@ data "azurerm_private_endpoint_connection" "private-ip2" {
   count               = var.enable_failover_group && var.enable_private_endpoint ? 1 : 0
   name                = azurerm_private_endpoint.pep2.0.name
   resource_group_name = local.resource_group_name
-  depends_on          = [azurerm_sql_server.secondary_sql]
+  depends_on          = [azurerm_mssql_server.secondary_sql]
 }
 
 resource "azurerm_private_dns_zone" "dns_zone" {
@@ -94,7 +94,7 @@ resource "azurerm_private_dns_a_record" "a_rec1" {
 
 resource "azurerm_private_dns_a_record" "a_rec2" {
   count               = var.enable_failover_group && var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_sql_server.secondary_sql.0.name
+  name                = azurerm_mssql_server.secondary_sql.0.name
   zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dns_zone.0.name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
