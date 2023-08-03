@@ -13,13 +13,13 @@ output "resource_group_location" {
 
 output "sql_administrator_login" {
   description = "SQL Administrator login"
-  value       = var.administrator_login
+  value       = var.administrator_login == null ? "sqladmin" : var.administrator_login
   sensitive   = true
 }
 
 output "sql_administrator_password" {
   description = "SQL Administrator password"
-  value       = var.administrator_password
+  value       = var.administrator_password == null ? random_password.main.result : var.administrator_password
   sensitive   = true
 }
 
@@ -129,14 +129,4 @@ output "primary_sql_server_private_endpoint" {
 output "sql_server_private_dns_zone_domain" {
   description = "DNS zone name of SQL server Private endpoints dns name records"
   value       = var.existing_private_dns_zone == null && var.enable_private_endpoint ? element(concat(azurerm_private_dns_zone.dns_zone.*.name, [""]), 0) : var.existing_private_dns_zone
-}
-
-output "primary_sql_server_private_endpoint_ip" {
-  description = "Priamary SQL server private endpoint IPv4 Addresses "
-  value       = element(concat(data.azurerm_private_endpoint_connection.pip.*.private_service_connection.0.private_ip_address, [""]), 0)
-}
-
-output "primary_sql_server_private_endpoint_fqdn" {
-  description = "Priamary SQL server private endpoint IPv4 Addresses "
-  value       = element(concat(azurerm_private_dns_a_record.a_rec.*.fqdn, [""]), 0)
 }
