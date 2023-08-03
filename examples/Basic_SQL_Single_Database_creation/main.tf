@@ -1,15 +1,5 @@
 
-#---------------------------------------------------------
-# Azure Region Lookup
-#----------------------------------------------------------
-module "mod_azure_region_lookup" {
-  source  = "azurenoops/overlays-azregions-lookup/azurerm"
-  version = "~> 1.0.0"
-
-  azure_region = "eastus"
-}
-
-module "mssql_single" {
+module "mod_mssql_single" {
   source = "../.."
   # source  = "azurenoops/overlays-azsql/azurerm"
   # version = "x.x.x"
@@ -32,41 +22,16 @@ module "mssql_single" {
   # characters from three of the following categories: English uppercase letters,
   # English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.).
   administrator_login    = "adminsqltest"
+  administrator_password = "P@ssw0rd1234"
 
-  # SQL server extended auditing policy defaults to `true`. 
-  # To turn off set enable_sql_server_extended_auditing_policy to `false`  
-  # DB extended auditing policy defaults to `false`. 
-  # to tun on set the variable `enable_database_extended_auditing_policy` to `true` 
-  # To enable Azure Defender for database set `enable_threat_detection_policy` to true 
-  enable_threat_detection_policy         = true
-  threat_detection_policy_retention_days = 30
-
-  # schedule scan notifications to the subscription administrators
-  # Manage Vulnerability Assessment set `enable_sql_vulnerability_assessment` to `true`
-  enable_sql_vulnerability_assessment = false
-  email_addresses_for_alerts      = ["user@example.com", "firstname.lastname@example.com"]
-
-  # AD administrator for an Azure SQL server
-  # Allows you to set a user or group as the AD administrator for an Azure SQL server
-  ad_admin_login_name = "firstname.lastname@example.com"
-
-  # (Optional) To enable Azure Monitoring for Azure SQL database including audit logs
-  # Log Analytic workspace resource id required
-  # (Optional) Specify `storage_account_id` to save monitoring logs to storage. 
-  enable_log_monitoring = false
-
-  # Firewall Rules to allow azure and external clients and specific Ip address/ranges. 
-  enable_firewall_rules = true
-  firewall_rules = [
+  # To create a database users set `create_databases_users` to `true`
+  create_databases_users = false
+  
+  # Create a database.
+  databases = [
     {
-      name             = "access-to-azure"
-      start_ip_address = "0.0.0.0"
-      end_ip_address   = "0.0.0.0"
-    },
-    {
-      name             = "desktop-ip"
-      start_ip_address = "52.204.225.21"
-      end_ip_address   = "52.204.225.21"
+      name        = "db1"
+      max_size_gb = 5
     }
   ]
 
